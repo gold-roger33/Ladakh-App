@@ -1,0 +1,232 @@
+package com.example.ladakh.ui.theme
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import com.example.ladakh.DataSources.DataSources
+import com.example.ladakh.DataSources.DataSources.HomeScreenItems
+import com.example.ladakh.R
+import com.example.ladakh.model.HomeScreenDatas
+import com.example.ladakh.ui.DetailedScreen
+import com.example.ladakh.ui.ExtendedScreen
+
+
+enum class LadakhScreen(val route: String){
+    HOME("home"),
+    EXTENDED("extended/{id}"),
+    DETIALED("detailed/{id}");
+
+    fun withArgs(vararg args: Any): String {
+        return route.replace("{id}",args[0].toString())
+    }
+}
+
+
+@Composable
+fun LadakhApp(
+    navController: NavHostController = rememberNavController()
+){
+   // val backStackEntry by navController.currentBackStackEntryAsState()
+
+    Scaffold(
+        topBar = {
+            TopAppBar()
+        },
+        modifier = Modifier.fillMaxSize()) { innerPadding ->
+
+        NavHost(
+            navController = navController,
+            startDestination = LadakhScreen.HOME.route,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+
+        ){
+            composable(route = LadakhScreen.HOME.route){
+                HomeScreenUi(
+                    homescreenitems = HomeScreenItems,
+                    onCardClicked = {id ->
+                        navController.navigate(LadakhScreen.EXTENDED.withArgs(id))
+                    }
+                )
+            }
+            composable( route =  LadakhScreen.EXTENDED.route){ backStackEntry ->
+
+            val id = backStackEntry.arguments?.getString("id")?.toIntOrNull() ?:return@composable
+                val items = DataSources.extendedScreenItem[id] ?: emptyList()
+
+                ExtendedScreen(
+                    extendedScreenDatas = items
+                )
+            }
+            composable(route = LadakhScreen.DETIALED.route){ backStackEntry ->
+
+            val id = backStackEntry.arguments?.getString("id")?.toIntOrNull() ?:return@composable
+                val detailData  = DataSources.DetialedScreenItems[id]?.firstOrNull()
+                detailData?.let {
+                    DetailedScreen(detailedScreenData = it)
+                }
+            }
+
+        }
+
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TopAppBar(){
+    CenterAlignedTopAppBar(
+        title = {
+            Column {
+                Text(
+                    "Good Morning",
+                    color = Color.Black
+                )
+                Text("Ladakh !",
+                    color = Color.Black
+                )
+            }
+        },
+        actions = {
+            Image(
+                painter = painterResource( R.drawable.tso_kar),
+                contentDescription = "Circular Avatar",
+                modifier = Modifier.
+                size(40.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.FillBounds
+            )
+        },
+    )
+}
+
+@Composable
+fun HomeScreenUi(
+    modifier: Modifier =  Modifier,
+    onCardClicked: (Int) -> Unit,
+    homescreenitems : List<HomeScreenDatas>
+    ){
+    Box(
+        modifier = modifier
+
+    ) {
+        HomeScreenImage()
+        LazyColumn (
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ){
+            items(
+                homescreenitems, key ={HomeScreenDatas -> HomeScreenDatas.id}) { homescreen ->
+
+                HomeScreenCards(
+                    cardDetials = homescreen,
+                    modifier = Modifier,
+                    onClicked = { onCardClicked(it.id)}
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun HomeScreenCards(
+    cardDetials:HomeScreenDatas,
+    onClicked: (HomeScreenDatas)-> Unit,
+    modifier: Modifier
+){
+
+    Card(
+       // elevation = CardDefaults.cardElevation(4.dp),
+        shape = RoundedCornerShape(60f),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White.copy(alpha = 0.5f)
+        ),
+        modifier = Modifier
+            .padding(16.dp)
+            .size(width = 400.dp, height = 130.dp)
+            .clickable { onClicked(cardDetials) }
+
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+
+        ) {
+            Text(
+                text = cardDetials.name,
+                color = Color.Black,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .padding(start = 20.dp)
+            )
+
+            Image(
+                painter = painterResource(cardDetials.ImageId),
+                contentDescription = "Card Image",
+                modifier = Modifier
+                    .padding(8.dp)
+                    .size(width = 150.dp, height = 100.dp)
+                    .clip(RoundedCornerShape(9f)),
+                contentScale = ContentScale.FillBounds
+            )
+        }
+    }
+}
+
+
+
+@Composable
+fun HomeScreenImage(
+    modifier: Modifier =  Modifier
+        .fillMaxSize()
+){
+    Column (modifier = Modifier.fillMaxHeight()) {
+        Image(
+            painter = painterResource(R.drawable.background_image1),
+            contentDescription = "HomeScreen Background Image",
+            contentScale = ContentScale.FillHeight,
+            modifier = Modifier
+                .fillMaxSize()
+            //   .blur(1.5.dp)
+        )
+    }
+}
