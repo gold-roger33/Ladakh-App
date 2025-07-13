@@ -2,6 +2,7 @@ package com.example.ladakh.ui
 
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -37,7 +38,8 @@ data class ExtendedScreenItemWithHeight(
 
 @Composable
 fun ExtendedScreen(
-    extendedScreenDatas: List<ExtendedScreenDatas>
+    extendedScreenDatas: List<ExtendedScreenDatas>,
+    onCardCliked: (Int) -> Unit
 ){
     val itemsWithHeights = mutableListOf<ExtendedScreenItemWithHeight>()
     var oddCount = 0
@@ -73,7 +75,9 @@ fun ExtendedScreen(
         extendedScreenCards(
             cardImageId = item.data.ImageId,
             height = item.height,
-            cardText = item.data.name
+            cardText = item.data.name,
+            cardDetials = item.data,
+            onCardCliked = {onCardCliked(item.data.id)}
         )
 
         }
@@ -85,13 +89,16 @@ fun ExtendedScreen(
 fun extendedScreenCards(
     cardImageId: Int,
     height: Dp,
-    cardText: String
+    cardText: String,
+    cardDetials:ExtendedScreenDatas,
+    onCardCliked: (Int) -> Unit
 ){
     Box(
         modifier = Modifier
             .height(height)
             .fillMaxSize()
             .clip(RoundedCornerShape(16.dp))
+            .clickable { onCardCliked(cardDetials.id) }
     ) {
         Image(
             painter = painterResource(cardImageId),
@@ -114,6 +121,7 @@ fun extendedScreenCards(
 fun EXtendedScreenPreview(){
 
     ExtendedScreen(
-            extendedScreenDatas = extendedScreenItem.values.flatten()
+            extendedScreenDatas = extendedScreenItem.values.flatten(),
+        onCardCliked = {}
     )
 }

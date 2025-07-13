@@ -122,7 +122,7 @@ object DataSources {
                 ImageId = R.drawable.trekking
             )
         ),
-        4 to listOf(
+        5 to listOf(
             ExtendedScreenDatas(
                 id = 2,
                 name = "Hemis Festival",
@@ -223,8 +223,98 @@ object DataSources {
                         "Nearby, the serene Gurudwara Pathar Sahib, built in memory of Guru Nanak, provides a spiritual complement to the whimsical magnetic hill experience. " +
                         "The unique combination of natural wonder, cultural heritage, and stunning scenery makes Magnetic Hills a must-see destination for travelers exploring Ladakh."
             )
+        ),
+
+        2 to listOf(
+            DetialedScreenData(
+                name = "Cafe Cloud",
+                ImageId = R.drawable.cafe_cloud,
+                location = "Leh, Ladakh",
+                detials = "A cozy café with panoramic views of Leh valley. Known for its freshly brewed coffee, pastries, and relaxed vibe. It’s a favorite spot for travelers to unwind after sightseeing."
+            ),
+            DetialedScreenData(
+                name = "Lamayuru Restaurant",
+                ImageId = R.drawable.lamayuru_restaurant,
+                location = "Leh, Ladakh",
+                detials = "Traditional Ladakhi cuisine served in a homely setting. Try the thukpa, momos, and butter tea with warm hospitality and cultural decor."
+            ),
+            DetialedScreenData(
+                name = "Bon Appetit",
+                ImageId = R.drawable.bon_appetit_webp,
+                location = "Leh, Ladakh",
+                detials = "Popular multi-cuisine restaurant offering Italian, Indian, and continental dishes. Known for its wood‑fired pizzas, pastas, and scenic rooftop seating."
+            ),
+            DetialedScreenData(
+                name = "Chopsticks Noodle Bar",
+                ImageId = R.drawable.chopsticks_noodle_bar,
+                location = "Leh, Ladakh",
+                detials = "Casual noodle bar specializing in Tibetan and Chinese dishes. Great for authentic dumplings, thukpa, and spicy stir‑fries after a day of trekking."
+            ),
+            DetialedScreenData(
+                name = "Tibetan Kitchen",
+                ImageId = R.drawable.tibetan_kitchen,
+                location = "Leh, Ladakh",
+                detials = "A small, family‑run joint focusing on Tibetan specialties like momos, tingmo, and hearty stews—perfect for a cozy meal in colder weather."
+            ),
+            DetialedScreenData(
+                name = "Dylans Toasted and Roasted",
+                ImageId = R.drawable.dylans_toasted_and_roasted,
+                location = "Leh, Ladakh",
+                detials = "Specialty café known for freshly baked bread, sandwiches, pastries, and roasted coffee. A great breakfast/brunch spot with a modern vibe."
+            )
+        ),
+
+        3 to listOf(
+            DetialedScreenData(
+                name = "Camel Safari",
+                ImageId = R.drawable.ladakh_s_camel_safari,
+                location = "Hunder, Nubra Valley",
+                detials = "Ride the iconic double‑humped Bactrian camels across the sandy dunes of Hunder. A unique desert‑like experience amidst Himalayan valleys."
+            ),
+            DetialedScreenData(
+                name = "Mountain Biking",
+                ImageId = R.drawable.mountain_biking,
+                location = "Around Leh",
+                detials = "Guided or self‑guided biking on rugged trails through valleys, monasteries, and passes. Offers a thrilling way to explore the region at your own pace."
+            ),
+            DetialedScreenData(
+                name = "River Rafting",
+                ImageId = R.drawable.river_rafting_ladakh,
+                location = "Zanskar River",
+                detials = "Exciting rafting trips ranging from mild to wild along the Zanskar River—great for adrenaline junkies wanting to experience Ladakh’s rivers."
+            ),
+            DetialedScreenData(
+                name = "Trekking",
+                ImageId = R.drawable.trekking,
+                location = "Multiple Routes, Ladakh",
+                detials = "Popular treks include Chadar (frozen river trek), Markha Valley, and Stok Kangri base camp. Experience varied terrain, high passes, and remote villages."
+            )
+        ),
+        5 to listOf(
+            DetialedScreenData(
+                name = "Hemis Festival",
+                ImageId = R.drawable.hemis_festival,
+                location = "Hemis Monastery, Leh",
+                detials = "One of the most vibrant Buddhist festivals held every June. Features traditional mask dances (Cham), music, and colorful processions celebrating Guru Padmasambhava."
+            ),
+            DetialedScreenData(
+                name = "Losar Festival",
+                ImageId = R.drawable.losar_festival,
+                location = "Ladakh",
+                detials = "Tibetan New Year (February/March) celebrated with prayers, family gatherings, traditional feasts, and cultural performances. A time of renewal and community bonding."
+            ),
+            DetialedScreenData(
+                name = "Sindhu Darshan",
+                ImageId = R.drawable.sindhu_darhsan,
+                location = "Indus River, Leh",
+                detials = "Held annually in June to honor the Sindhu (Indus) River. Features cultural programs, river‑side rituals, and positive vibes celebrating Ladakhi heritage."
+            ),
+            DetialedScreenData(
+                name = "Thangka Paintings",
+                ImageId = R.drawable.thangka_paintings,
+                location = "Monasteries around Leh",
+                detials = "A traditional art form of detailed chakra and deity paintings on canvas. Visit workshops and learn about the spiritual symbolism and techniques behind Thangka art."
+            )
         )
     )
-
-
 }
