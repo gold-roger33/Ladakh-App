@@ -1,6 +1,9 @@
     package com.example.ladakh.ui.theme
 
     import android.util.Log
+    import androidx.compose.animation.AnimatedVisibility
+    import androidx.compose.animation.fadeIn
+    import androidx.compose.animation.fadeOut
     import androidx.compose.foundation.Image
     import androidx.compose.foundation.clickable
     import androidx.compose.foundation.layout.Arrangement
@@ -39,6 +42,7 @@
     import androidx.navigation.NavHostController
     import androidx.navigation.compose.NavHost
     import androidx.navigation.compose.composable
+    import androidx.navigation.compose.currentBackStackEntryAsState
     import androidx.navigation.compose.rememberNavController
     import com.example.ladakh.DataSources.DataSources
     import com.example.ladakh.DataSources.DataSources.HomeScreenItems
@@ -72,9 +76,12 @@
         navController: NavHostController = rememberNavController(),
         ladakhViewModel: LadakhViewModel = viewModel()
     ){
+        val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
         Scaffold(
             topBar = {
-                TopAppBar()
+                if (currentRoute?.startsWith(LadakhScreen.DETIALED.route) == false) {
+                    TopAppBar()
+                }
             },
             modifier = Modifier.fillMaxSize()) { innerPadding ->
 
