@@ -39,6 +39,7 @@ import com.example.ladakh.model.DetialedScreenData
 
 @Composable
 fun DetailedScreen(
+    modifier: Modifier,
     detailedScreenData: DetialedScreenData
 ){
     Box (
@@ -168,6 +169,7 @@ fun Descriptions(
 @Composable
 fun DetailedScreenPreview() {
     DetailedScreen(
+        modifier = Modifier,
         detailedScreenData = DataSources.DetialedScreenItems[1]!!.first()
     )
 }

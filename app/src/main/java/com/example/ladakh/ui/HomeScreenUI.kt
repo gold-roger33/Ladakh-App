@@ -1,9 +1,8 @@
     package com.example.ladakh.ui.theme
 
-    import android.util.Log
+    import LadakhViewModel
+    import android.annotation.SuppressLint
     import androidx.compose.animation.AnimatedVisibility
-    import androidx.compose.animation.fadeIn
-    import androidx.compose.animation.fadeOut
     import androidx.compose.foundation.Image
     import androidx.compose.foundation.clickable
     import androidx.compose.foundation.layout.Arrangement
@@ -17,22 +16,22 @@
     import androidx.compose.foundation.layout.size
     import androidx.compose.foundation.lazy.LazyColumn
     import androidx.compose.foundation.lazy.items
-    import androidx.compose.foundation.rememberScrollState
     import androidx.compose.foundation.shape.CircleShape
     import androidx.compose.foundation.shape.RoundedCornerShape
-    import androidx.compose.foundation.verticalScroll
     import androidx.compose.material3.Card
     import androidx.compose.material3.CardDefaults
     import androidx.compose.material3.CenterAlignedTopAppBar
     import androidx.compose.material3.ExperimentalMaterial3Api
     import androidx.compose.material3.Scaffold
     import androidx.compose.material3.Text
+    import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
     import androidx.compose.runtime.Composable
+    import androidx.compose.runtime.collectAsState
     import androidx.compose.runtime.getValue
     import androidx.compose.ui.Alignment
     import androidx.compose.ui.Modifier
     import androidx.compose.ui.draw.clip
-    import androidx.compose.ui.draw.shadow
+    import androidx.compose.ui.focus.focusModifier
     import androidx.compose.ui.graphics.Color
     import androidx.compose.ui.layout.ContentScale
     import androidx.compose.ui.res.painterResource
@@ -45,12 +44,10 @@
     import androidx.navigation.compose.currentBackStackEntryAsState
     import androidx.navigation.compose.rememberNavController
     import com.example.ladakh.DataSources.DataSources
-    import com.example.ladakh.DataSources.DataSources.HomeScreenItems
     import com.example.ladakh.R
     import com.example.ladakh.model.HomeScreenDatas
     import com.example.ladakh.ui.DetailedScreen
     import com.example.ladakh.ui.ExtendedScreen
-    import com.example.ladakh.ui.LadakhViewModel
 
     const val Tag = "HomeScreen"
 
@@ -71,66 +68,125 @@
     }
 
 
+
+
+    @SuppressLint("StateFlowValueCalledInComposition")
     @Composable
     fun LadakhApp(
+        windowSize: WindowWidthSizeClass,
         navController: NavHostController = rememberNavController(),
         ladakhViewModel: LadakhViewModel = viewModel()
-    ){
-        val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
+    ) {
+        val isTablet = windowSize >= WindowWidthSizeClass.Medium
+        val categoryId by ladakhViewModel.currentCategory.collectAsState()
+        val selectedItem by ladakhViewModel.selectedItem.collectAsState()
+
+
+
         Scaffold(
-            topBar = {
-                if (currentRoute?.startsWith(LadakhScreen.DETIALED.route) == false) {
-                    TopAppBar()
-                }
+            topBar = { 
+                TopAppBar()
             },
-            modifier = Modifier.fillMaxSize()) { innerPadding ->
-
-            NavHost(
-                navController = navController,
-                startDestination = LadakhScreen.HOME.route,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-
-            ){
-                composable(route = LadakhScreen.HOME.route){
+            modifier = Modifier.fillMaxSize()
+        ) { innerPadding ->
+            if (isTablet) {
+                // Tablet layout - canonical pattern
+                if (categoryId == null) {
+                    // Show home screen when no category selected
                     HomeScreenUi(
-                        homescreenitems = HomeScreenItems,
-                        onCardClicked = {categoryId ->
-                            ladakhViewModel.setCategory(categoryId)
-                            navController.navigate(LadakhScreen.EXTENDED.withArgs(categoryId))
+                        modifier = Modifier.padding(innerPadding),
+                        homescreenitems = DataSources.HomeScreenItems,
+                        onCardClicked = { clickedCategoryId ->
+                            ladakhViewModel.setCategory(clickedCategoryId)
                         }
                     )
-                }
-                composable( route =  LadakhScreen.EXTENDED.route){ backStackEntry ->
-
-                    val id = backStackEntry.arguments?.getString("categoryId")?.toIntOrNull() ?:return@composable
-                    val items = DataSources.extendedScreenItem[id] ?: emptyList()
-
-                    ExtendedScreen(
-                        extendedScreenDatas = items,
-                        onCardCliked = { itemId ->
-                            val currentCategory =  ladakhViewModel.uiState.value ?: return@ExtendedScreen
-                            navController.navigate(LadakhScreen.DETIALED.withArgs(currentCategory,itemId))
+                } else {
+                    // Show split view when category is selected
+                    Row(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding)
+                    ) {
+                        // ExtendedScreen - 40%
+                        Box(modifier = Modifier.weight(4f)) {
+                            ExtendedScreen(
+                                modifier = Modifier,
+                                extendedScreenDatas = DataSources.extendedScreenItem[categoryId] ?: emptyList(),
+                                onCardCliked = { itemId ->
+                                    ladakhViewModel.selectItem(categoryId!!, itemId)
+                                }
+                            )
                         }
-                    )
-                }
-                composable(route = LadakhScreen.DETIALED.route){ backStackEntry ->
 
-                    val categoryId = backStackEntry.arguments?.getString("categoryId")?.toIntOrNull() ?:return@composable
-                    val itemId = backStackEntry.arguments?.getString("itemId")?.toIntOrNull() ?: return@composable
-
-                    val detailData =ladakhViewModel.getDetailedItem(categoryId,itemId)
-
-                    detailData?.let {
-                        DetailedScreen(detailedScreenData = it)
+                        // DetailedScreen - 60%
+                        Box(modifier = Modifier.weight(6f)) {
+                            selectedItem?.let { (catId, itemId) ->
+                                ladakhViewModel.getDetailedItem(catId, itemId)?.let { detailData ->
+                                    DetailedScreen(
+                                        modifier = Modifier,
+                                        detailedScreenData = detailData)
+                                }
+                            }
+                        }
                     }
                 }
-
+            } else {
+                // Phone layout - navigation pattern
+                PhoneNavHost(
+                    modifier = Modifier.padding(innerPadding),
+                    navController = navController,
+                    ladakhViewModel = ladakhViewModel
+                )
             }
-
         }
     }
+
+    @Composable
+    fun PhoneNavHost(
+        modifier: Modifier,
+        navController: NavHostController,
+        ladakhViewModel: LadakhViewModel
+    ) {
+        NavHost(
+            navController = navController,
+            startDestination = LadakhScreen.HOME.route,
+            modifier = modifier
+        ) {
+            composable(route = LadakhScreen.HOME.route) {
+                HomeScreenUi(
+                    homescreenitems = DataSources.HomeScreenItems,
+                    onCardClicked = { categoryId ->
+                        ladakhViewModel.setCategory(categoryId)
+                        navController.navigate(LadakhScreen.EXTENDED.withArgs(categoryId))
+                    }
+                )
+            }
+            composable(route = LadakhScreen.EXTENDED.route) { backStackEntry ->
+                val id = backStackEntry.arguments?.getString("categoryId")?.toIntOrNull() ?: return@composable
+                val items = DataSources.extendedScreenItem[id] ?: emptyList()
+
+                ExtendedScreen(
+                    modifier = modifier,
+                    extendedScreenDatas = items,
+                    onCardCliked = { itemId ->
+                        navController.navigate(LadakhScreen.DETIALED.withArgs(id, itemId))
+                    }
+                )
+            }
+            composable(route = LadakhScreen.DETIALED.route) { backStackEntry ->
+                val categoryId = backStackEntry.arguments?.getString("categoryId")?.toIntOrNull() ?: return@composable
+                val itemId = backStackEntry.arguments?.getString("itemId")?.toIntOrNull() ?: return@composable
+
+                val detailData = ladakhViewModel.getDetailedItem(categoryId, itemId)
+                detailData?.let {
+                    DetailedScreen(
+                        modifier = modifier,
+                        detailedScreenData = it)
+                }
+            }
+        }
+    }
+
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
@@ -195,7 +251,7 @@
     ){
 
         Card(
-           // elevation = CardDefaults.cardElevation(4.dp),
+            elevation = CardDefaults.cardElevation(4.dp),
             shape = RoundedCornerShape(60f),
             colors = CardDefaults.cardColors(
                 containerColor = Color.White.copy(alpha = 0.5f)

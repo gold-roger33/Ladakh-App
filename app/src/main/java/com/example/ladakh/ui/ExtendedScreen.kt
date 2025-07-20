@@ -2,10 +2,12 @@ package com.example.ladakh.ui
 
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -38,6 +40,7 @@ data class ExtendedScreenItemWithHeight(
 
 @Composable
 fun ExtendedScreen(
+    modifier: Modifier,
     extendedScreenDatas: List<ExtendedScreenDatas>,
     onCardCliked: (Int) -> Unit
 ){
@@ -60,7 +63,7 @@ fun ExtendedScreen(
         )
     }
 
-    TopAppBar()
+    //TopAppBar()
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(2),
         modifier = Modifier
@@ -72,13 +75,13 @@ fun ExtendedScreen(
     ) {
         items(itemsWithHeights){ item ->
 
-        extendedScreenCards(
-            cardImageId = item.data.ImageId,
-            height = item.height,
-            cardText = item.data.name,
-            cardDetials = item.data,
-            onCardCliked = {onCardCliked(item.data.id)}
-        )
+            extendedScreenCards(
+                cardImageId = item.data.ImageId,
+                height = item.height,
+                cardText = item.data.name,
+                cardDetials = item.data,
+                onCardCliked = {onCardCliked(item.data.id)}
+            )
 
         }
     }
@@ -97,13 +100,19 @@ fun extendedScreenCards(
         modifier = Modifier
             .height(height)
             .fillMaxSize()
+//            .border(
+//                width = 0.dp,
+//                color = Color.Black,
+//                shape = RoundedCornerShape(16.dp)
+//            )
             .clip(RoundedCornerShape(16.dp))
             .clickable { onCardCliked(cardDetials.id) }
     ) {
         Image(
             painter = painterResource(cardImageId),
             contentDescription = "Extended Box Image",
-            contentScale = ContentScale.FillBounds
+            contentScale = ContentScale.FillHeight,
+            modifier = Modifier.fillMaxHeight()
         )
         Text(
             text = cardText,
@@ -121,7 +130,8 @@ fun extendedScreenCards(
 fun EXtendedScreenPreview(){
 
     ExtendedScreen(
-            extendedScreenDatas = extendedScreenItem.values.flatten(),
+        modifier = Modifier,
+        extendedScreenDatas = extendedScreenItem.values.flatten(),
         onCardCliked = {}
     )
 }
